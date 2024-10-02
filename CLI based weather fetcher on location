@@ -1,0 +1,29 @@
+import requests
+import argparse
+API_KEY = 'your_openweathermap_api_key'  # Replace with your OpenWeatherMap API key
+def get_weather(city):
+    base_url = "http://api.openweathermap.org/data/2.5/weather?"
+    complete_url = base_url + "appid=" + API_KEY + "&q=" + city
+    response = requests.get(complete_url)
+    data = response.json()
+    if data["cod"] != "404":
+        main = data["main"]
+        weather = data["weather"][0]
+        temperature = main["temp"] - 273.15  # Convert from Kelvin to Celsius
+        pressure = main["pressure"]
+        humidity = main["humidity"]
+        description = weather["description"]
+        print(f"City: {city}")
+        print(f"Temperature: {temperature:.2f}°C")
+        print(f"Pressure: {pressure} hPa")
+        print(f"Humidity: {humidity}%")
+        print(f"Weather Description: {description}")
+    else:
+        print("City Not Found!")
+def main():
+    parser = argparse.ArgumentParser(description="CLI Weather Fetcher")
+    parser.add_argument("city", help="City name to fetch the weather for")
+    args = parser.parse_args()
+    get_weather(args.city)
+if __name__ == "__main__":
+    main()
