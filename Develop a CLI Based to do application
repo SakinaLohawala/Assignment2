@@ -1,0 +1,51 @@
+import argparse
+import os
+TODO_FILE = 'todo.txt'
+def add_task(task):
+    with open(TODO_FILE, 'a') as file:
+        file.write(task + '\n')
+    print(f'Added task: {task}')
+def list_tasks():
+    if os.path.exists(TODO_FILE):
+        with open(TODO_FILE, 'r') as file:
+            tasks = file.readlines()
+        if tasks:
+            print('Your to-do list:')
+            for idx, task in enumerate(tasks, 1):
+                print(f'{idx}. {task.strip()}')
+        else:
+            print('Your to-do list is empty.')
+    else:
+        print('Your to-do list is empty.')
+def remove_task(task_number):
+    if os.path.exists(TODO_FILE):
+        with open(TODO_FILE, 'r') as file:
+            tasks = file.readlines()
+        if 0 < task_number <= len(tasks):
+            removed_task = tasks.pop(task_number - 1).strip()
+            with open(TODO_FILE, 'w') as file:
+                file.writelines(tasks)
+            print(f'Removed task: {removed_task}')
+        else:
+            print('Invalid task number.')
+    else:
+        print('Your to-do list is empty.')
+def main():
+    parser = argparse.ArgumentParser(description='Simple CLI To-Do Application')
+    parser.add_argument('command', choices=['add', 'list', 'remove'], help='Command to execute')
+    parser.add_argument('task', nargs='?', help='Task description or task number')
+    args = parser.parse_args()
+    if args.command == 'add' and args.task:
+        add_task(args.task)
+    elif args.command == 'list':
+        list_tasks()
+    elif args.command == 'remove' and args.task:
+        try:
+            task_number = int(args.task)
+            remove_task(task_number)
+        except ValueError:
+            print('Please provide a valid task number.')
+    else:
+        print('Invalid command or missing task description/number.')
+if __name__ == '__main__':
+    main()
